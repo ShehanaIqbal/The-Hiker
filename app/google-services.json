@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "223667339811",
+    "project_id": "traveloid-b4bd8",
+    "storage_bucket": "traveloid-b4bd8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:223667339811:android:aa72bf1d1689893ee4a796",
+        "android_client_info": {
+          "package_name": "com.example.hiker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "223667339811-p0h04g70kgvt0va9th81inu5u6ne8gub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6CF5lg-FZggqMi2CTFbMdibHYUymJaxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "223667339811-p0h04g70kgvt0va9th81inu5u6ne8gub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
