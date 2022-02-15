@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Hiker</string>
+    <string name="signup">Sign up</string>
+    <string name="signin">Sign in</string>
+    <string name="signup_desc">Join the world of hikers</string>
+    <string name="submit">Submit</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="c_password">Confirm password</string>
+    <string name="welcome">Welcome</string>
 </resources>

@@ -7,4 +7,19 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="pink">#FCDACA</color>
+    <color name="blue">#F3F4F9</color>
+    <color name="title">#391922</color>
+    <color name="desc">#A59399</color>
+    <color name="stroke">#EAEAEA</color>
+    <color name="button">#65B643</color>
+    <color name="supp">#DEF5FE</color>
+    <color name="thera">#DEF8E9</color>
+    <color name="overw">#FFF7E4</color>
+    <color name="stunt">#FFEBEA</color>
+    <color name="all_reg">#E3F2DD</color>
+    <color name="other">#F8E4C6</color>
+    <color name="blue_title_text">#00B2F2</color>
+    <color name="blue_title_bg">#00B2F2</color>
+    <color name="back_btn_bg">#FB6861</color>
 </resources>

@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hiker">
         <activity
+            android:name=".SignIn"
+            android:exported="false" />
+        <activity
+            android:name=".SignUp"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
