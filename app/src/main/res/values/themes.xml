@@ -2,12 +2,12 @@
     <!-- Base application theme. -->
     <style name="Theme.Hiker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#A39056</item>
-        <item name="colorPrimaryVariant">#D5C88C</item>
+        <item name="colorPrimary">#914B0D</item>
+        <item name="colorPrimaryVariant">#CF9A70</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#7C6C3B</item>
-        <item name="colorSecondaryVariant">#BCAC73</item>
+        <item name="colorSecondary">#AF5422</item>
+        <item name="colorSecondaryVariant">#F8AE75</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
