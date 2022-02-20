@@ -8,4 +8,10 @@
     <string name="password">Password</string>
     <string name="c_password">Confirm password</string>
     <string name="welcome">Welcome</string>
+    <string name="searchHere">Search here</string>
+
+    <string name="submitTrail">Add your hike</string>
+    <string name="hikeName">Name of your hike</string>
+    <string name="timeTaken">Time taken</string>
+    <string name="uploadHere">Upload here</string>
 </resources>

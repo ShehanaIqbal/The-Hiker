@@ -5,9 +5,12 @@
       <map>
         <entry key="app/src/main/res/drawable/background_button.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.174" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.31614583333333335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33125" />
+        <entry key="app/src/main/res/layout/activity_search_hike.xml" value="0.24089635854341737" />
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.33125" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.16510416666666666" />
+        <entry key="app/src/main/res/layout/activity_submit_trail.xml" value="0.33125" />
       </map>
     </option>
   </component>

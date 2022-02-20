@@ -10,6 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hiker">
         <activity
+            android:name=".SubmitTrail"
+            android:exported="false" />
+        <activity
+            android:name=".Home"
+            android:exported="false" />
+        <activity
+            android:name=".SearchHike"
+            android:exported="false" />
+        <activity
             android:name=".SignIn"
             android:exported="true" />
         <activity
