@@ -3,11 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".SignUp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    tools:context=".SignUpActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -48,8 +44,8 @@
             android:layout_marginTop="10dp"
             android:text="@string/signup_desc"
             android:textAlignment="center"
-            android:textColor="@color/desc"
-            android:textSize="17dp" />
+            android:textColor="#FAFAFA"
+            android:textSize="17sp" />
 
         <EditText
             android:id="@+id/username"
@@ -64,7 +60,7 @@
             android:paddingHorizontal="20dp"
             android:paddingVertical="13dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/desc" />
+            android:textColorHint="#757575" />
 
         <EditText
             android:id="@+id/password"
@@ -79,7 +75,7 @@
             android:paddingHorizontal="20dp"
             android:paddingVertical="13dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/desc" />
+            android:textColorHint="#757575" />
 
         <EditText
             android:id="@+id/c_password"
@@ -94,7 +90,7 @@
             android:paddingHorizontal="20dp"
             android:paddingVertical="13dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/desc" />
+            android:textColorHint="#757575" />
 
         <Button
             android:layout_width="match_parent"
@@ -107,6 +103,6 @@
             android:textColor="@color/white"
             android:text="@string/signup"
             android:textAllCaps="false"
-            android:textSize="18dp" />
+            android:textSize="18sp" />
     </LinearLayout>
 </RelativeLayout>
