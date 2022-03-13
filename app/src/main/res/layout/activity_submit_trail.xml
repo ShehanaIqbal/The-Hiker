@@ -98,7 +98,7 @@
                     android:layout_height="28dp"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="10dp"
-                    android:src="@drawable/uploadIcon" />
+                    android:src="@drawable/upload_icon" />
             </LinearLayout>
         </LinearLayout>
 
