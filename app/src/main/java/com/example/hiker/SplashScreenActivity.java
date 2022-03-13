@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.example.hiker.auth.FireBaseAuthHelper;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -18,12 +20,19 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                navigateToLogin();
+                navigateToRoot();
             }
-        }, 1000);
+        }, 3000);
     }
 
-    private void navigateToLogin() {
-        startActivity(new Intent(SplashScreenActivity.this, SignInActivity.class));
+    private void navigateToRoot() {
+        Intent rootPage;
+        if (FireBaseAuthHelper.getCurrentUser()!= null){
+            rootPage = new Intent(this ,HomeActivity.class);
+        } else {
+            rootPage = new Intent(this , SignInActivity.class);
+        }
+        finish();
+        startActivity(rootPage);
     }
 }

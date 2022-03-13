@@ -31,8 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
-            android:textAlignment="center"
             android:text="@string/welcome"
+            android:textAlignment="center"
             android:textColor="@color/title"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -48,7 +48,7 @@
             android:textSize="17sp" />
 
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/username_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -63,7 +63,7 @@
             android:textColorHint="#757575" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/password_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -78,7 +78,7 @@
             android:textColorHint="#757575" />
 
         <EditText
-            android:id="@+id/c_password"
+            android:id="@+id/c_password_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -99,10 +99,10 @@
             android:layout_marginHorizontal="60dp"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/title"
-            android:onClick="goToSignIn"
-            android:textColor="@color/white"
+            android:onClick="onSignUpClick"
             android:text="@string/signup"
             android:textAllCaps="false"
+            android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>
 </RelativeLayout>
