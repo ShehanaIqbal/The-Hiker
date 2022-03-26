@@ -1,17 +1,6 @@
 <resources>
     <string name="app_name">Hiker</string>
-    <string name="signup">Sign up</string>
-    <string name="signin">Sign in</string>
-    <string name="signup_desc">Join the world of hikers</string>
-    <string name="submit">Submit</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="c_password">Confirm password</string>
-    <string name="welcome">Welcome</string>
-    <string name="searchHere">Search here</string>
-
-    <string name="submitTrail">Add your hike</string>
-    <string name="hikeName">Name of your hike</string>
-    <string name="timeTaken">Time taken</string>
-    <string name="uploadHere">Upload here</string>
+    <string name="searchHere">searchHere</string>
+    <string name="welcome">welcome</string>
+    <string name="signup_desc">signup_desc</string>
 </resources>
