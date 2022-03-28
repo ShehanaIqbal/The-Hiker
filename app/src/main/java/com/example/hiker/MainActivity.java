@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
     private DiscreteScrollView itemPicker;
     private InfiniteScrollAdapter<?> infiniteAdapter;
     private ProgressBar progressBar;
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements DiscreteScrollVie
         currentItemName = findViewById(R.id.item_name);
         currentItemDistance = findViewById(R.id.item_distance);
         profilePic = findViewById(R.id.profile_image);
-
+        context=getApplicationContext();
         // Check login
         User user = SharedPrefUtils.getUserFromSP(this);
         if (user == null) {

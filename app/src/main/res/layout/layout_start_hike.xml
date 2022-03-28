@@ -9,81 +9,106 @@
     android:elevation="8dp"
     app:cardCornerRadius="8dp">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+        <Button
+            android:layout_marginTop="6dp"
+            android:onClick="loginClicked"
+            android:id="@+id/begin"
+            android:layout_marginHorizontal="36dp"
+            android:textColor="@color/teal_700"
+            android:background="@drawable/edittext_bg_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-            <Button
-                android:layout_marginTop="6dp"
-                android:onClick="loginClicked"
-                android:id="@+id/begin"
-                android:layout_marginHorizontal="36dp"
-                android:textColor="@color/teal_700"
-                android:background="@drawable/edittext_bg_small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Begin" />
-            <TextView
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="6dp"
-                android:text="Press Begin when you are at the Starting point of the Hike."
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#88000000"
-                android:textSize="12dp" />
-            <Button
-                android:layout_marginTop="10dp"
-                android:onClick="loginClicked"
-                android:id="@+id/addMarker"
-                android:layout_marginHorizontal="36dp"
-                android:textColor="@color/teal_700"
-                android:background="@drawable/edittext_bg_small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add Marker" />
-            <TextView
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="6dp"
-                android:text="Add markers along your trail."
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#88000000"
-                android:textSize="12dp" />
-            <Button
-                android:layout_marginTop="10dp"
-                android:onClick="loginClicked"
-                android:id="@+id/finish"
-                android:layout_marginHorizontal="36dp"
-                android:textColor="@color/teal_700"
-                android:background="@drawable/edittext_bg_small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Finish and Save" />
-            <TextView
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="6dp"
-                android:text="End and Save your Hike."
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                android:textColor="#88000000"
-                android:textSize="12dp" />
-            <Button
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="10dp"
-                android:onClick="loginClicked"
-                android:id="@+id/restart"
-                android:layout_marginHorizontal="36dp"
-                android:textColor="@color/teal_700"
-                android:background="@drawable/edittext_bg_small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Restart" />
-        </LinearLayout>
+            android:text="Begin"  />
+        <TextView
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="Press Begin when you are at the Starting point of the Hike."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#88000000"
+            android:textSize="12dp" />
+
+<!--        -->
+        <Button
+            android:id="@+id/autoTrack"
+            android:layout_width="match_parent"
+            android:tag="1"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="36dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/edittext_bg_small"
+            android:onClick="loginClicked"
+            android:text="Auto Track"
+            android:textColor="@color/teal_700" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:paddingBottom="6dp"
+            android:text="Press Auto Track to track location in real time."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#88000000"
+            android:textSize="12dp" />
+<!--        -->
+        <Button
+            android:layout_marginTop="10dp"
+            android:onClick="loginClicked"
+            android:id="@+id/addMarker"
+            android:layout_marginHorizontal="36dp"
+            android:textColor="@color/teal_700"
+            android:background="@drawable/edittext_bg_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Marker"  />
+        <TextView
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="Add markers along your trail."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#88000000"
+            android:textSize="12dp" />
+        <Button
+            android:layout_marginTop="10dp"
+            android:onClick="loginClicked"
+            android:id="@+id/finish"
+            android:layout_marginHorizontal="36dp"
+            android:textColor="@color/teal_700"
+            android:background="@drawable/edittext_bg_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Finish and Save"  />
+        <TextView
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="6dp"
+            android:text="End and Save your Hike."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="#88000000"
+            android:textSize="12dp" />
+        <Button
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="10dp"
+            android:onClick="loginClicked"
+            android:id="@+id/restart"
+            android:layout_marginHorizontal="36dp"
+            android:textColor="@color/teal_700"
+            android:background="@drawable/edittext_bg_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Restart" />
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

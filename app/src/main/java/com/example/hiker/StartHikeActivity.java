@@ -22,6 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,9 +49,14 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     private GoogleMap mMap;
 
     private Button begin;
+    private Button autoTrack;
     private Button addMarker;
     private Button finish;
     private Button restart;
+    LocationRequest mLocationRequest;
+    private static final long UPDATE_INTERVAL = 1000;
+    private static final long FASTEST_UPDATE_INTERVAL = 500;
+    private  boolean isAutoTracking=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,17 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         setContentView(R.layout.activity_start_hike);
 
         isLocationPermissionGranted();
+    }
+
+    public void onLocationUpdated(Location location) {
+        if (location != null) {
+            Log.d("New Location", location.getLatitude() + ", " + location.getLongitude());
+            SharedPrefUtils.addLocToOnGoingHike(getApplicationContext(), location.getLatitude(), location.getLongitude());
+
+            LatLng newPin = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(newPin));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, 5));
+        }
     }
 
     public void isLocationPermissionGranted() {
@@ -89,17 +108,27 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        if (location != null) {
-                            Log.e("New Location", location.getLatitude() + ", " + location.getLongitude());
-                            SharedPrefUtils.addLocToOnGoingHike(getApplicationContext(), location.getLatitude(), location.getLongitude());
-
-                            LatLng newPin = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(newPin));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, 5));
-                        }
+                        onLocationUpdated(location);
                     }
                 });
     }
+    @SuppressLint("MissingPermission")
+    private void getLocationUpdateInBackground() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+    }
+    private final LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+            Location currentLocation = locationResult.getLastLocation();
+            onLocationUpdated(currentLocation);
+        }
+    };
 
     public void onBackPressed(View view) {
         onBackPressed();
@@ -115,9 +144,36 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     private void initLayout() {
         // get reference to all buttons and set the state
         begin = findViewById(R.id.begin);
+        autoTrack = findViewById(R.id.autoTrack);
         addMarker = findViewById(R.id.addMarker);
         finish = findViewById(R.id.finish);
         restart = findViewById(R.id.restart);
+
+        final View.OnClickListener onClickAutoTracking = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String status =(String) view.getTag();
+                Log.d("AutoTrackTag", status);
+                if (status=="1") { //autoTracking not started yet
+                    Log.d("StartHikeActivity", "autoTrack start button clicked");
+                    getLocationUpdateInBackground();
+                    autoTrack.setText("Stop");
+                    isAutoTracking = true;
+                    view.setTag("0");
+                }else{
+                    Log.d("StartHikeActivity", "autoTrack stop button clicked");
+                    fusedLocationClient.removeLocationUpdates(mLocationCallback);
+                    enableButtons();
+                    autoTrack.setText("Auto Track");
+                    isAutoTracking = false;
+                    view.setTag("1");
+                }
+            }
+        } ;
+
+        autoTrack.setOnClickListener(
+                onClickAutoTracking
+        );
 
         if (SharedPrefUtils.onGoingHike(getApplicationContext()) == null) {
             resetPage();
@@ -129,7 +185,9 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         begin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("StartHikeActivity", "begin button clicked");
                 getLastLocation();
+                autoTrack.setTag("1");
                 enableButtons();
             }
         });
@@ -171,11 +229,13 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void enableButtons() {
         begin.setEnabled(false);
+        autoTrack.setEnabled(true);
         addMarker.setEnabled(true);
         finish.setEnabled(true);
         restart.setEnabled(true);
 
         begin.setTextColor(getResources().getColor(R.color.shopSecondary));
+        autoTrack.setTextColor(getResources().getColor(R.color.teal_700));
         addMarker.setTextColor(getResources().getColor(R.color.teal_700));
         finish.setTextColor(getResources().getColor(R.color.teal_700));
         restart.setTextColor(getResources().getColor(R.color.teal_700));
@@ -184,11 +244,13 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     private void resetPage() {
         SharedPrefUtils.deleteOnGoingHike(getApplicationContext());
         begin.setEnabled(true);
+        autoTrack.setEnabled(false);
         addMarker.setEnabled(false);
         finish.setEnabled(false);
         restart.setEnabled(false);
 
         begin.setTextColor(getResources().getColor(R.color.teal_700));
+        autoTrack.setTextColor(getResources().getColor(R.color.shopSecondary));
         addMarker.setTextColor(getResources().getColor(R.color.shopSecondary));
         finish.setTextColor(getResources().getColor(R.color.shopSecondary));
         restart.setTextColor(getResources().getColor(R.color.shopSecondary));
@@ -281,6 +343,6 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
         initLayout();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(52.9631884661419, -1.174854825044051), 5));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(7.8731, 80.7718), 10));
     }
 }
