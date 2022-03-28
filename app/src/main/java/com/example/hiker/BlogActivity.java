@@ -1,5 +1,6 @@
 package com.example.hiker;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -130,6 +131,7 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         try {
@@ -145,7 +147,8 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .clickable(true)
                 .addAll(path));
         stylePolyline(polyline1);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(path.get(0), 5));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(path.get(0), 7));
+        googleMap.setMyLocationEnabled(true);
         googleMap.setOnPolylineClickListener(this);
     }
 

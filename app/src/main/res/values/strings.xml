@@ -10,4 +10,6 @@
     <string name="gps_service_access_failure">gps_service_access_failure</string>
     <string name="gps_service_connection_dropped">gps_service_connection_dropped</string>
     <string name="location_updated">Location Updated: %1$s</string>
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="ok">OK</string>
 </resources>

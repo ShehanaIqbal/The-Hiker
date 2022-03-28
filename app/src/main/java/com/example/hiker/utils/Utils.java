@@ -15,6 +15,7 @@ import java.util.Date;
 
 public class Utils {
     static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_location_updates";
+    static final String AUTO_TRACK_BUTTON_TAG="auto_track_button_tag";
 
     public static Uri getImageUri(Context applicationContext, Bitmap selectedImage, String title) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -33,6 +34,10 @@ public class Utils {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false);
     }
+    public static String getAutoTrackButtonTag(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(AUTO_TRACK_BUTTON_TAG, "1");
+    }
     /**
      * Stores the location updates state in SharedPreferences.
      * @param requestingLocationUpdates The location updates state.
@@ -42,6 +47,12 @@ public class Utils {
                 .edit()
                 .putBoolean(KEY_REQUESTING_LOCATION_UPDATES, requestingLocationUpdates)
                 .apply();
+    }
+    public static void setAutoTrackButtonTag(Context context, String tag) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putString(AUTO_TRACK_BUTTON_TAG, tag)
+                .commit();
     }
 
     /**

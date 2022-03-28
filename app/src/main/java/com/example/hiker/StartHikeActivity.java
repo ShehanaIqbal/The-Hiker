@@ -2,12 +2,18 @@ package com.example.hiker;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +48,10 @@ import com.example.hiker.model.HikeSerializable;
 import com.example.hiker.model.LatLangSerializable;
 import com.example.hiker.utils.MapperUtils;
 import com.example.hiker.utils.SharedPrefUtils;
+import com.example.hiker.utils.Utils;
+import com.example.hiker.helper.ForegroundLocationUpdateService;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -56,14 +66,125 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     LocationRequest mLocationRequest;
     private static final long UPDATE_INTERVAL = 1000;
     private static final long FASTEST_UPDATE_INTERVAL = 500;
-    private  boolean isAutoTracking=false;
+    private static final int MAP_ZOOM = 7;
+    private static final String TAG = StartHikeActivity.class.getSimpleName();
+
+    // A reference to the service used to get location updates.
+    private ForegroundLocationUpdateService mService =null;
+
+    // Tracks the bound state of the service.
+    private boolean mBound = false;
+
+    // The BroadcastReceiver used to listen from broadcasts from the service.
+    private MyReceiver myReceiver;
+
+    // Used in checking for runtime permissions.
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+
+    // Monitors the state of the connection to the service.
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ForegroundLocationUpdateService.LocalBinder binder = (ForegroundLocationUpdateService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mService = null;
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        myReceiver = new MyReceiver();
         setContentView(R.layout.activity_start_hike);
-
+        // Check that the user hasn't revoked permissions by going to Settings.
+//        if (Utils.requestingLocationUpdates(this)) {
+////            if (!checkPermissions()) {
+////                requestPermissions();
+////            }
+//            isLocationPermissionGranted();
+//        }
         isLocationPermissionGranted();
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        initLayout();
+        // Bind to the service. If the service is in foreground mode, this signals to the service
+        // that since this activity is in the foreground, the service can exit foreground mode.
+        bindService(new Intent(this, ForegroundLocationUpdateService.class), mServiceConnection,
+                Context.BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
+                new IntentFilter(ForegroundLocationUpdateService.ACTION_BROADCAST));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        if (mBound) {
+            // Unbind from the service. This signals to the service that this activity is no longer
+            // in the foreground, and the service can respond by promoting itself to a foreground
+            // service.
+            unbindService(mServiceConnection);
+            mBound = false;
+        }
+        super.onStop();
+    }
+
+    private boolean checkPermissions() {
+        return  PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+    private void requestPermissions() {
+        boolean shouldProvideRationale =
+                ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+
+        // Provide an additional rationale to the user. This would happen if the user denied the
+        // request previously, but didn't check the "Don't ask again" checkbox.
+        if (shouldProvideRationale) {
+            Log.i(TAG, "Displaying permission rationale to provide additional context.");
+            Snackbar.make(
+                    findViewById(R.id.activity_start_hike),
+                    R.string.permission_rationale,
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // Request permission
+                            ActivityCompat.requestPermissions(StartHikeActivity.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                        }
+                    })
+                    .show();
+        } else {
+            Log.i(TAG, "Requesting permission");
+            // Request permission. It's possible this can be auto answered if device policy
+            // sets the permission in a given state or the user denied the permission
+            // previously and checked "Never ask again".
+            ActivityCompat.requestPermissions(StartHikeActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
     }
 
     public void onLocationUpdated(Location location) {
@@ -73,7 +194,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
 
             LatLng newPin = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(newPin));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, 5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, MAP_ZOOM));
         }
     }
 
@@ -83,14 +204,15 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         } else {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION
-            }, 2);
+            }, REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.i(TAG, "onRequestPermissionResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initMap();
         } else {
             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -148,6 +270,13 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         addMarker = findViewById(R.id.addMarker);
         finish = findViewById(R.id.finish);
         restart = findViewById(R.id.restart);
+        String status = Utils.getAutoTrackButtonTag(this.getApplicationContext());
+        autoTrack.setTag(status);
+        if (status=="1") {
+            autoTrack.setText("Auto Track");
+        } else {
+            autoTrack.setText("Stop");
+        }
 
         final View.OnClickListener onClickAutoTracking = new View.OnClickListener() {
             @Override
@@ -156,16 +285,18 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                 Log.d("AutoTrackTag", status);
                 if (status=="1") { //autoTracking not started yet
                     Log.d("StartHikeActivity", "autoTrack start button clicked");
-                    getLocationUpdateInBackground();
+//                    getLocationUpdateInBackground();
+                    mService.requestLocationUpdates();
                     autoTrack.setText("Stop");
-                    isAutoTracking = true;
                     view.setTag("0");
+                    Utils.setAutoTrackButtonTag(getApplicationContext(), "0");
                 }else{
                     Log.d("StartHikeActivity", "autoTrack stop button clicked");
-                    fusedLocationClient.removeLocationUpdates(mLocationCallback);
+//                    fusedLocationClient.removeLocationUpdates(mLocationCallback);
+                    mService.removeLocationUpdates();
                     enableButtons();
                     autoTrack.setText("Auto Track");
-                    isAutoTracking = false;
+                    Utils.setAutoTrackButtonTag(getApplicationContext(), "1");
                     view.setTag("1");
                 }
             }
@@ -187,7 +318,6 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
             public void onClick(View view) {
                 Log.d("StartHikeActivity", "begin button clicked");
                 getLastLocation();
-                autoTrack.setTag("1");
                 enableButtons();
             }
         });
@@ -210,6 +340,10 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onClick(View view) {
                 resetPage();
+                mService.removeLocationUpdates();
+                autoTrack.setTag("1");
+                autoTrack.setText("Auto Track");
+                Utils.setAutoTrackButtonTag(getApplicationContext(), "1");
             }
         });
     }
@@ -243,6 +377,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void resetPage() {
         SharedPrefUtils.deleteOnGoingHike(getApplicationContext());
+        Utils.setAutoTrackButtonTag( getApplicationContext(),"1");
         begin.setEnabled(true);
         autoTrack.setEnabled(false);
         addMarker.setEnabled(false);
@@ -343,6 +478,20 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
         initLayout();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(7.8731, 80.7718), 10));
+//        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(7.8731, 80.7718), MAP_ZOOM));
     }
+
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Location location = intent.getParcelableExtra(ForegroundLocationUpdateService.EXTRA_LOCATION);
+            if (location != null) {
+                onLocationUpdated(location);
+                Toast.makeText(StartHikeActivity.this, Utils.getLocationText(location),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
