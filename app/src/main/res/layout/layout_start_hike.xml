@@ -10,106 +10,89 @@
     android:elevation="8dp"
     app:cardCornerRadius="8dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <GridLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:columnCount="3"
+        android:rowCount="2"
+        android:verticalSpacing="1dp"
+        android:layout_gravity="center"
+        android:foregroundGravity="center"
         android:padding="12dp">
+
         <Button
-            android:layout_marginTop="6dp"
-            android:onClick="loginClicked"
             android:id="@+id/begin"
-            android:layout_marginHorizontal="36dp"
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/edittext_bg_small"
+            android:onClick="loginClicked"
+            android:text="Begin"
+            android:textColor="@color/teal_700"
+            android:tooltipText="Press Begin when you are at the Starting point of the Hike." />
+        <Button
+            android:onClick="loginClicked"
+            android:id="@+id/comment"
+            android:tooltipText="Capture image."
             android:textColor="@color/teal_700"
             android:background="@drawable/edittext_bg_small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Begin"  />
-        <TextView
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="6dp"
-            android:text="Press Begin when you are at the Starting point of the Hike."
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#88000000"
-            android:textSize="12dp" />
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
+            android:text="Add\nComment"  />
 
 <!--        -->
         <Button
             android:id="@+id/autoTrack"
-            android:layout_width="match_parent"
             android:tag="1"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="36dp"
-            android:layout_marginTop="6dp"
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
             android:background="@drawable/edittext_bg_small"
             android:onClick="loginClicked"
-            android:text="Auto Track"
+            android:text="Auto\ntrack"
+            android:tooltipText="Press Auto Track to track location in real time."
             android:textColor="@color/teal_700" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:paddingBottom="6dp"
-            android:text="Press Auto Track to track location in real time."
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#88000000"
-            android:textSize="12dp" />
 <!--        -->
         <Button
-            android:layout_marginTop="10dp"
             android:onClick="loginClicked"
             android:id="@+id/addMarker"
-            android:layout_marginHorizontal="36dp"
             android:textColor="@color/teal_700"
             android:background="@drawable/edittext_bg_small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Marker"  />
-        <TextView
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="6dp"
-            android:text="Add markers along your trail."
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#88000000"
-            android:textSize="12dp" />
+            android:tooltipText="Add markers along your trail."
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
+            android:text="Add\nMarker"  />
+
         <Button
-            android:layout_marginTop="10dp"
             android:onClick="loginClicked"
             android:id="@+id/finish"
-            android:layout_marginHorizontal="36dp"
+            android:tooltipText="Finish and Save your Hike."
             android:textColor="@color/teal_700"
             android:background="@drawable/edittext_bg_small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Finish and Save"  />
-        <TextView
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="6dp"
-            android:text="End and Save your Hike."
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="#88000000"
-            android:textSize="12dp" />
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
+            android:text="End"  />
+
         <Button
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="10dp"
             android:onClick="loginClicked"
             android:id="@+id/restart"
-            android:layout_marginHorizontal="36dp"
+            android:tooltipText="reset and clear hike data"
             android:textColor="@color/teal_700"
             android:background="@drawable/edittext_bg_small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:padding="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="4dp"
             android:text="Restart" />
-    </LinearLayout>
+    </GridLayout>
 </androidx.cardview.widget.CardView>

@@ -6,14 +6,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".StartHikeActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        map:cameraZoom="10"
+        android:layout_height="723dp"
+        android:layout_above="@+id/bottom_bar"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="-2dp"
+        app:cameraZoom="10"
         tools:context=".BlogActivity" />
 
     <ImageView
@@ -30,15 +33,16 @@
 
 
     <LinearLayout
+        android:id="@+id/bottom_bar"
         android:layout_margin="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
         <include
+            layout="@layout/layout_start_hike"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/layout_start_hike" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </RelativeLayout>
