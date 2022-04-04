@@ -1,6 +1,7 @@
 package com.example.hiker.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HikeSerializable implements Serializable {
@@ -12,11 +13,14 @@ public class HikeSerializable implements Serializable {
     private List<LatLangSerializable> path;
     private Boolean popular;
     private Boolean featured;
+    private List<CommentSerializable> comments;
 
-    public HikeSerializable() {
+    public HikeSerializable(String hikeId) {
+        this.id = hikeId;
+        this.comments = new ArrayList<>();
     }
 
-    public HikeSerializable(String id, String title, String distance, String image, List<LatLangSerializable> path, Boolean popular, Boolean featured) {
+    public HikeSerializable(String id, String title, String distance, String image, List<LatLangSerializable> path, Boolean popular, Boolean featured , List<CommentSerializable> comments) {
         this.id = id;
         this.title = title;
         this.distance = distance;
@@ -24,6 +28,7 @@ public class HikeSerializable implements Serializable {
         this.path = path;
         this.popular = popular;
         this.featured = featured;
+        this.comments = comments;
     }
 
     public String getId() {
@@ -80,5 +85,11 @@ public class HikeSerializable implements Serializable {
 
     public void setFeatured(Boolean featured) {
         this.featured = featured;
+    }
+    public List<CommentSerializable> getComments() {
+        return comments;
+    }
+    public void addComment(CommentSerializable comment) {
+        this.comments.add(comment);
     }
 }
