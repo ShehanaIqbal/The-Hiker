@@ -2,14 +2,17 @@ package com.example.hiker;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,11 +25,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
+import com.example.hiker.api.FirebaseApi;
+import com.example.hiker.helper.ForegroundLocationUpdateService;
+import com.example.hiker.model.CommentSerializable;
+import com.example.hiker.model.Hike;
+import com.example.hiker.model.HikeSerializable;
+import com.example.hiker.model.LatLangSerializable;
+import com.example.hiker.utils.MapperUtils;
+import com.example.hiker.utils.SharedPrefUtils;
+import com.example.hiker.utils.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -41,17 +48,20 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.example.hiker.api.FirebaseApi;
-import com.example.hiker.model.Hike;
-import com.example.hiker.model.HikeSerializable;
-import com.example.hiker.model.LatLangSerializable;
-import com.example.hiker.utils.MapperUtils;
-import com.example.hiker.utils.SharedPrefUtils;
-import com.example.hiker.utils.Utils;
-import com.example.hiker.helper.ForegroundLocationUpdateService;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import static com.example.hiker.utils.SharedPrefUtils.getOnGoingHikeId;
 
 public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -63,11 +73,15 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     private Button addMarker;
     private Button finish;
     private Button restart;
+    private Button comment;
     LocationRequest mLocationRequest;
     private static final long UPDATE_INTERVAL = 1000;
     private static final long FASTEST_UPDATE_INTERVAL = 500;
-    private static final int MAP_ZOOM = 7;
+    private static final int MAP_ZOOM = 15;
     private static final String TAG = StartHikeActivity.class.getSimpleName();
+    private Uri photoPath;
+    private Location mLocation;
+    private String hikeId;
 
     // A reference to the service used to get location updates.
     private ForegroundLocationUpdateService mService =null;
@@ -80,6 +94,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
 
     // Used in checking for runtime permissions.
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+    int CAMERA_ACTIVITY = 111;
 
     // Monitors the state of the connection to the service.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -102,14 +117,14 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myReceiver = new MyReceiver();
+        hikeId = getOnGoingHikeId(this);
         setContentView(R.layout.activity_start_hike);
-        // Check that the user hasn't revoked permissions by going to Settings.
-//        if (Utils.requestingLocationUpdates(this)) {
-////            if (!checkPermissions()) {
-////                requestPermissions();
-////            }
-//            isLocationPermissionGranted();
-//        }
+//         Check that the user hasn't revoked permissions by going to Settings.
+        if (Utils.requestingLocationUpdates(this)) {
+            if (!checkPermissions()) {
+                requestPermissions();
+            }
+        }
         isLocationPermissionGranted();
     }
     @Override
@@ -147,6 +162,31 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
             mBound = false;
         }
         super.onStop();
+    }
+    @Override
+    public void onActivityResult ( int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            photoPath = Utils.getImageUri(getApplicationContext(), photo,UUID.randomUUID().toString());
+            Log.d("ff", photoPath.toString());
+        }
+        else if (resultCode != RESULT_CANCELED) {
+            switch (requestCode) {
+                case 0:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Bitmap photo = (Bitmap) data.getExtras().get("data");
+                        photoPath = Utils.getImageUri(getApplicationContext(), photo,UUID.randomUUID().toString());
+                        Log.d("ff", photoPath.toString());
+                    }
+                    break;
+                case 1:
+                    if (resultCode == RESULT_OK && data != null) {
+                        photoPath = data.getData();
+                    }
+                    break;
+            }
+        }
     }
 
     private boolean checkPermissions() {
@@ -190,8 +230,8 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     public void onLocationUpdated(Location location) {
         if (location != null) {
             Log.d("New Location", location.getLatitude() + ", " + location.getLongitude());
-            SharedPrefUtils.addLocToOnGoingHike(getApplicationContext(), location.getLatitude(), location.getLongitude());
-
+            SharedPrefUtils.addLocToOnGoingHike(getApplicationContext(),hikeId, location.getLatitude(), location.getLongitude());
+            mLocation =location;
             LatLng newPin = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(newPin));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, MAP_ZOOM));
@@ -235,14 +275,16 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                 });
     }
     @SuppressLint("MissingPermission")
-    private void getLocationUpdateInBackground() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
-    }
+
+//    private void getLocationUpdateInBackground() {
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        mLocationRequest = LocationRequest.create();
+//        mLocationRequest.setInterval(UPDATE_INTERVAL);
+//        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        fusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+//    }
+
     private final LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -270,6 +312,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         addMarker = findViewById(R.id.addMarker);
         finish = findViewById(R.id.finish);
         restart = findViewById(R.id.restart);
+        comment = findViewById(R.id.comment);
         String status = Utils.getAutoTrackButtonTag(this.getApplicationContext());
         autoTrack.setTag(status);
         if (status=="1") {
@@ -321,6 +364,13 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                 enableButtons();
             }
         });
+        comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("StartHikeActivity", "comment button clicked");
+                openCommentPopUp();
+            }
+        });
 
         addMarker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -356,7 +406,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                 mMap.addMarker(new MarkerOptions().position(newPin));
             }
             if (newPin != null) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, 5));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, MAP_ZOOM));
             }
         }
     }
@@ -367,12 +417,14 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         addMarker.setEnabled(true);
         finish.setEnabled(true);
         restart.setEnabled(true);
+        comment.setEnabled(true);
 
         begin.setTextColor(getResources().getColor(R.color.shopSecondary));
         autoTrack.setTextColor(getResources().getColor(R.color.teal_700));
         addMarker.setTextColor(getResources().getColor(R.color.teal_700));
         finish.setTextColor(getResources().getColor(R.color.teal_700));
         restart.setTextColor(getResources().getColor(R.color.teal_700));
+        comment.setTextColor(getResources().getColor(R.color.teal_700));
     }
 
     private void resetPage() {
@@ -383,18 +435,123 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         addMarker.setEnabled(false);
         finish.setEnabled(false);
         restart.setEnabled(false);
+        comment.setEnabled(false);
 
         begin.setTextColor(getResources().getColor(R.color.teal_700));
         autoTrack.setTextColor(getResources().getColor(R.color.shopSecondary));
         addMarker.setTextColor(getResources().getColor(R.color.shopSecondary));
         finish.setTextColor(getResources().getColor(R.color.shopSecondary));
         restart.setTextColor(getResources().getColor(R.color.shopSecondary));
+        comment.setTextColor(getResources().getColor(R.color.shopSecondary));
 
         if (mMap != null) {
             mMap.clear();
         }
+        autoTrack.setTag("1");
+        autoTrack.setText("Auto Track");
+        hikeId=getOnGoingHikeId(this);
+        mService.removeLocationUpdates();
     }
 
+    public void addImage() {
+        final CharSequence[] optionsMenu = {"Take Photo", "Choose from Gallery", "Cancel"}; // create a menuOption Array
+        // create a dialog for showing the optionsMenu
+        AlertDialog.Builder builder = new AlertDialog.Builder(StartHikeActivity.this);
+        builder.setItems(optionsMenu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (optionsMenu[i].equals(optionsMenu[0])) {
+                    Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 0);
+                } else if (optionsMenu[i].equals(optionsMenu[1])) {
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 1);
+                } else if (optionsMenu[i].equals(optionsMenu[2])) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private  void openCommentPopUp(){
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_add_comment, null);
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        alertDialog.setTitle("Add Comment");
+        EditText comment = (EditText) promptView.findViewById(R.id.comment);
+        Button addComment = (Button) promptView.findViewById(R.id.add);
+        Button capture = (Button) promptView.findViewById(R.id.capture);
+        Button back = (Button) promptView.findViewById(R.id.back);
+
+
+
+
+        capture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("StartHikeActivity", "capture button clicked");
+//                Intent intent = new Intent(StartHikeActivity.this, CameraActivity.class);
+//                startActivityForResult(intent,CAMERA_ACTIVITY);
+                addImage();
+            }
+        });
+        addComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (comment.getText().toString().length() > 0) {
+                    CommentSerializable commentSerializable = new CommentSerializable(comment.getText().toString(),hikeId,null, MapperUtils.convertToGeoPoint(mLocation));
+                    if (photoPath != null) {
+                        StorageReference ref = FirebaseApi.saveHikePictures();
+                        ref.putFile(photoPath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        photoPath = uri;
+                                        commentSerializable.setImageUrl(uri.toString());
+                                        SharedPrefUtils.addCommentToOnGoingHike(getApplicationContext(), commentSerializable, hikeId);
+                                        FirebaseApi.saveComment(commentSerializable);
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("StartHikeActivity", "failed to upload image");
+                                photoPath = null;
+                                commentSerializable.setImageUrl(null);
+                                SharedPrefUtils.addCommentToOnGoingHike(getApplicationContext(), commentSerializable, hikeId);
+                                FirebaseApi.saveComment(commentSerializable);
+                                Toast.makeText(getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    else {
+                        commentSerializable.setImageUrl(null);
+                        SharedPrefUtils.addCommentToOnGoingHike(getApplicationContext(), commentSerializable, hikeId);
+                        FirebaseApi.saveComment(commentSerializable);
+                    }
+                    alertDialog.dismiss();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Please enter a comment", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                comment.setText("");
+                photoPath = null;
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.setView(promptView);
+        alertDialog.show();
+    }
     private void openSaveHikePopup() {
         HikeSerializable newHike = SharedPrefUtils.onGoingHike(getApplicationContext());
 
@@ -411,13 +568,15 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Hike hike = new Hike();
+                hike.setId(hikeId);
                 hike.setTitle(name.getText().toString());
                 hike.setDistance(distance.getText().toString() + " Miles");
                 hike.setImage(url.getText().toString());
                 hike.setFeatured(false);
                 hike.setPopular(false);
-                hike.setPath(MapperUtils.convertToGeoPoint(newHike.getPath()));
+                hike.setPath(MapperUtils.convertToGeoPoints(newHike.getPath()));
                 saveHikeInFirebase(hike);
+                resetPage();
                 alertD.cancel();
             }
         });
@@ -431,32 +590,34 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void saveHikeInFirebase(Hike hike) {
-        FirebaseApi.saveHike(hike)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("saveHike", "DocumentSnapshot added with ID: " + documentReference.getId());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(StartHikeActivity.this, "Saved your Hike", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("saveHike", "Error adding document", e);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(StartHikeActivity.this, "Saving Failed", Toast.LENGTH_SHORT).show();
-
-                            }
-                        });
-                    }
-                });
+        FirebaseApi.saveHike(hike);
+        Toast.makeText(StartHikeActivity.this, "Saved your Hike", Toast.LENGTH_SHORT).show();
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Log.d("saveHike", "DocumentSnapshot added with ID: " + documentReference.getId());
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(StartHikeActivity.this, "Saved your Hike", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w("saveHike", "Error adding document", e);
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(StartHikeActivity.this, "Saving Failed", Toast.LENGTH_SHORT).show();
+//
+//                            }
+//                        });
+//                    }
+//                }
+//                );
     }
 
     @Override

@@ -32,9 +32,10 @@ public class FirebaseApi {
         return db.collection("users").add(user);
     }
 
-    public static Task<DocumentReference> saveHike(Hike hike) {
+    public static Task<Void> saveHike(Hike hike) {
+        Log.d("FirebaseApi", new Gson().toJson(hike));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        return db.collection("hikes").add(hike);
+        return db.collection("hikes").document(hike.getId()).set(hike);
     }
 
     public static Task<Void> saveComment(CommentSerializable comment) {
