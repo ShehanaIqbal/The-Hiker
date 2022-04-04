@@ -1,5 +1,7 @@
 package com.example.hiker.utils;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 import com.example.hiker.model.Hike;
@@ -11,8 +13,7 @@ import java.util.List;
 
 public class MapperUtils {
     public static HikeSerializable convertToSerializable(Hike hike) {
-        HikeSerializable h = new HikeSerializable();
-        h.setId(hike.getId());
+        HikeSerializable h = new HikeSerializable(hike.getId());
         h.setTitle(hike.getTitle());
         h.setDistance(hike.getDistance());
         h.setImage(hike.getImage());
@@ -30,12 +31,15 @@ public class MapperUtils {
         return output;
     }
 
-    public static List<GeoPoint> convertToGeoPoint(List<LatLangSerializable> path) {
+    public static List<GeoPoint> convertToGeoPoints(List<LatLangSerializable> path) {
         List<GeoPoint> output = new ArrayList<>();
         for (LatLangSerializable point : path) {
             output.add(new GeoPoint(point.getLatitude(), point.getLongitude()));
         }
         return output;
+    }
+    public static GeoPoint convertToGeoPoint(Location location) {
+        return new GeoPoint(location.getLatitude(), location.getLongitude());
     }
 
     public static List<LatLng> convertToLatLang(List<LatLangSerializable> path) {
