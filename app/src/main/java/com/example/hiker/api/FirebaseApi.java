@@ -21,6 +21,10 @@ public class FirebaseApi {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         return db.collection("hikes").get();
     }
+    public static Task<QuerySnapshot> getHikeComments(String hikeId){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        return db.collection("comments").whereEqualTo("hikeId", hikeId).get();
+    }
 
     public static Task<QuerySnapshot> getUser(String email) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
