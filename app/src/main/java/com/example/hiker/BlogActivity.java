@@ -12,10 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import com.example.hiker.model.CommentSerializable;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.example.hiker.api.FirebaseApi;
 import com.example.hiker.model.HikeSerializable;
@@ -38,6 +41,8 @@ import com.example.hiker.utils.ImageLoadTask;
 import com.example.hiker.utils.MapperUtils;
 import com.example.hiker.utils.SharedPrefUtils;
 import com.example.hiker.utils.UserUtils;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +51,9 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     List<LatLng> path;
     User user;
-
+    private int ZOOM_LEVEL=15;
+    private HikeSerializable hike;
+    private List<CommentSerializable> commentSerializable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +66,12 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         ImageView img = findViewById(R.id.image);
         ImageView likeButton = findViewById(R.id.likeButton);
 
-        HikeSerializable hike = (HikeSerializable) getIntent().getSerializableExtra("hike");
+        hike = (HikeSerializable) getIntent().getSerializableExtra("hike");
         if (hike == null) {
             Intent intent = new Intent(BlogActivity.this, ExploreActivity.class);
             startActivity(intent);
         } else {
+            getComments();
             path = MapperUtils.convertToLatLang(hike.getPath());
             title.setText(hike.getTitle());
             distance.setText(hike.getDistance());
@@ -147,7 +155,7 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .clickable(true)
                 .addAll(path));
         stylePolyline(polyline1);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(path.get(0), 7));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(path.get(0), ZOOM_LEVEL));
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnPolylineClickListener(this);
     }
@@ -174,5 +182,37 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void onBackPressed(View view) {
         onBackPressed();
+    }
+
+    private void getComments(){
+        FirebaseApi.getHikeComments(hike.getId()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot queryDocumentSnapshots = task.getResult();
+                    commentSerializable = queryDocumentSnapshots.toObjects(CommentSerializable.class);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initCommentUi();
+                        }
+                    });
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(BlogActivity.this, "Issue loading comments", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void initCommentUi() {
+        Log.d("HikePath", "initCommentUi: " + commentSerializable.size());
+//        TODO : add bottom sheet to show comments with images
     }
 }

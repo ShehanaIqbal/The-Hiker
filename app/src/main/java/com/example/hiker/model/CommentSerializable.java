@@ -24,8 +24,7 @@ public class CommentSerializable implements Serializable {
         this.imageUrl = imageUrl;
         this.location = location;
     }
-
-
+    public CommentSerializable(){}
     public String getComment() {
         return comment;
     }
