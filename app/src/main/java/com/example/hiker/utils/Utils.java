@@ -8,10 +8,12 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 
 import com.example.hiker.R;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class Utils {
     static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_location_updates";
@@ -24,6 +26,17 @@ public class Utils {
         return Uri.parse(path);
     }
 
+    public static float getHikeDistance(List<GeoPoint> path) {
+        float distance = 0;
+        for (int i = 0; i < path.size() - 1; i++) {
+            distance += getDistance(path.get(i), path.get(i + 1));
+        }
+        return distance;
+    }
+
+    private static float getDistance(GeoPoint geoPoint, GeoPoint geoPoint1) {
+        return (float) Math.sqrt(Math.pow(geoPoint.getLatitude() - geoPoint1.getLatitude(), 2) + Math.pow(geoPoint.getLongitude() - geoPoint1.getLongitude(), 2));
+    }
 
     /**
      * Returns true if requesting location updates, otherwise returns false.
