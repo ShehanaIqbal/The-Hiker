@@ -450,7 +450,9 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         autoTrack.setTag("1");
         autoTrack.setText("Auto Track");
         hikeId=getOnGoingHikeId(this);
-        mService.removeLocationUpdates();
+        if (mService != null) {
+            mService.removeLocationUpdates();
+        }
     }
 
     public void addImage() {
