@@ -52,6 +52,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.DecimalFormat;
+import java.util.List;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -233,7 +235,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
             mLocation =location;
             LatLng newPin = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(newPin));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, MAP_ZOOM));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPin, MAP_ZOOM+5));
         }
     }
 
@@ -501,6 +503,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onClick(View view) {
                 if (comment.getText().toString().length() > 0) {
+                    getLastLocation();
                     CommentSerializable commentSerializable = new CommentSerializable(comment.getText().toString(),hikeId,null, MapperUtils.convertToGeoPoint(mLocation));
                     if (photoPath != null) {
                         StorageReference ref = FirebaseApi.saveHikePictures();
@@ -534,6 +537,8 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
                         SharedPrefUtils.addCommentToOnGoingHike(getApplicationContext(), commentSerializable, hikeId);
                         FirebaseApi.saveComment(commentSerializable);
                     }
+                    comment.setText("");
+                    photoPath= null;
                     alertDialog.dismiss();
                 }
                 else {
@@ -555,6 +560,7 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     }
     private void openSaveHikePopup() {
         HikeSerializable newHike = SharedPrefUtils.onGoingHike(getApplicationContext());
+        String d = new DecimalFormat("#.0#").format(Utils.getHikeDistance(newHike.getPath()));
 
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.dialog_save_hike, null);
@@ -566,13 +572,16 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         Button save = (Button) promptView.findViewById(R.id.save);
         Button back = (Button) promptView.findViewById(R.id.back);
 
+        url.setVisibility(View.GONE);
+        distance.setText(d);
+
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Hike hike = new Hike();
                 hike.setId(hikeId);
                 hike.setTitle(name.getText().toString());
-                hike.setDistance(distance.getText().toString() + " Miles");
-                hike.setImage(url.getText().toString());
+                hike.setDistance(distance.getText().toString() + " m");
+//                hike.setImage(url.getText().toString());
                 hike.setFeatured(false);
                 hike.setPopular(false);
                 hike.setPath(MapperUtils.convertToGeoPoints(newHike.getPath()));
@@ -591,6 +600,13 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void saveHikeInFirebase(Hike hike) {
+        List<CommentSerializable> comments = SharedPrefUtils.getCommentsFromOnGoingHike(getApplicationContext(), hikeId);
+        for (CommentSerializable c : comments) {
+            if (c.getImageUrl() != null) {
+                hike.setImage(c.getImageUrl());
+                break;
+            }
+        }
         FirebaseApi.saveHike(hike);
         Toast.makeText(StartHikeActivity.this, "Saved your Hike", Toast.LENGTH_SHORT).show();
 //                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

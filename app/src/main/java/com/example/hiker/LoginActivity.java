@@ -141,12 +141,27 @@ public class LoginActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(LoginActivity.this,
                         Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(),
-                            "FlagUp Requires Access to Camara.", Toast.LENGTH_SHORT)
+                            "Hiker Requires Access to Camara.", Toast.LENGTH_SHORT)
                             .show();
                 } else if (ContextCompat.checkSelfPermission(LoginActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(),
-                            "FlagUp Requires Access to Your Storage.",
+                            "Hiker Requires Access to Your Storage.",
+                            Toast.LENGTH_SHORT).show();
+                } else if (ContextCompat.checkSelfPermission(LoginActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(),
+                            "Hiker Requires Access to Your Storage.",
+                            Toast.LENGTH_SHORT).show();
+                } else if (ContextCompat.checkSelfPermission(LoginActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(),
+                            "Hiker Requires Access to Your Location.",
+                            Toast.LENGTH_SHORT).show();
+                } else if (ContextCompat.checkSelfPermission(LoginActivity.this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(),
+                            "Hiker Requires Access to Your Location.",
                             Toast.LENGTH_SHORT).show();
                 }
                 break;

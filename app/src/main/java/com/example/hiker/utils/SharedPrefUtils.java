@@ -102,4 +102,15 @@ public class SharedPrefUtils {
         editor.putString("onGoingHike", json);
         editor.commit();
     }
+    public  static List<CommentSerializable> getCommentsFromOnGoingHike(Context context, String hikeId) {
+        SharedPreferences pref = context.getSharedPreferences("HikerPrefs", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+
+        HikeSerializable hike = onGoingHike(context);
+
+        if (hike == null) {
+            hike = new HikeSerializable(hikeId);
+        }
+        return hike.getComments();
+    }
 }
