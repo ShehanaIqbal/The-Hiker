@@ -33,6 +33,7 @@
         android:layout_margin="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/map"
         android:layout_alignParentBottom="true">
 
 <!--        <include-->
@@ -47,6 +48,7 @@
             android:scrollbars="none">
             <LinearLayout
                 android:id="@+id/horizontal_linear"
+                android:gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
