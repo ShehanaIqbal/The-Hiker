@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -79,6 +79,11 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HandlerThread handlerThread = new HandlerThread("AssistMeThread");
     private NotificationManager mNotificationManager;
 
+    Uri sound ;
+    long[] vibrationPattern = {10, 2000, 1000, 2000 };
+    String CHANNEL_ID = "AssistMe_01";
+    NotificationChannel channel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,12 +91,11 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         user = SharedPrefUtils.getUserFromSP(BlogActivity.this);
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         handlerThread=new HandlerThread("AssistMeThread");
         handlerThread.start();
-//        TextView title = findViewById(R.id.title);
-//        TextView distance = findViewById(R.id.distance);
-//        ImageView img = findViewById(R.id.image);
-//        ImageView likeButton = findViewById(R.id.likeButton);
+
+        initNotificationChannel();
 
         hike = (HikeSerializable) getIntent().getSerializableExtra("hike");
         if (hike == null) {
@@ -100,17 +104,24 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             getComments();
             path = MapperUtils.convertToLatLang(hike.getPath());
-//            title.setText(hike.getTitle());
-//            distance.setText(hike.getDistance());
-//            setLikeButtonColor(likeButton, UserUtils.userFav(user, hike.getTitle()));
-            // set image
-            //new ImageLoadTask(hike.getImage(), img).execute();
 
             SupportMapFragment mapFragment =
                     (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
         }
+    }
+
+    private void initNotificationChannel() {
+        sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.audio_danger);
+        channel = new NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_ID,
+                NotificationManager.IMPORTANCE_HIGH);
+        channel.enableVibration(true);
+        channel.setVibrationPattern(vibrationPattern);
+        channel.setSound(sound, null);
+        mNotificationManager.createNotificationChannel(channel);
     }
 
     private void createHorizontalCard(HikeSerializable hike,  List<CommentSerializable> commentSerializable) {
@@ -215,7 +226,7 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         myLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (comment != null) {
+                if (comment.trim() != null) {
                     Toast.makeText(getApplicationContext(), comment, Toast.LENGTH_SHORT).show();
                     Log.i("Clicked on", comment + " " + geoPoint.getLatitude() + " " + geoPoint.getLongitude());
                 }
@@ -369,18 +380,6 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        TODO : add bottom sheet to show comments with images
     }
     public void notifyUser(String message) {
-        Uri sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.audio_danger);
-        long[] vibrationPattern = {10, 2000, 1000, 2000};
-        String CHANNEL_ID = "AssistMe_01";
-
-        NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_ID,
-                NotificationManager.IMPORTANCE_HIGH);
-        channel.enableVibration(true);
-        channel.setVibrationPattern(vibrationPattern);
-        channel.setSound(sound, null);
-
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("The Hiker")
@@ -393,7 +392,6 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setVibrate(vibrationPattern) // Vibrate for 500 milliseconds
                 ;
 
-        mNotificationManager.createNotificationChannel(channel);
         mNotificationManager.notify(9811, mBuilder.build());
 
     }
