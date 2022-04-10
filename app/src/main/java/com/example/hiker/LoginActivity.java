@@ -158,6 +158,10 @@ public class LoginActivity extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int cameraPermission = ContextCompat.checkSelfPermission(context,
                 Manifest.permission.CAMERA);
+        int locationPermission = ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        int coarseLocationPermission = ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_COARSE_LOCATION);
         List<String> listPermissionsNeeded = new ArrayList<>();
         if (cameraPermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.CAMERA);
@@ -165,6 +169,12 @@ public class LoginActivity extends AppCompatActivity {
         if (WExtstorePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded
                     .add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (coarseLocationPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(context, listPermissionsNeeded
