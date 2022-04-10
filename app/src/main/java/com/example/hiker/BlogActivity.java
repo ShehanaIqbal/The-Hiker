@@ -1,11 +1,19 @@
 package com.example.hiker;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -24,6 +33,8 @@ import com.example.hiker.model.CommentSerializable;
 import com.example.hiker.model.Hike;
 import com.example.hiker.model.LatLangSerializable;
 import com.example.hiker.utils.Utils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -65,6 +76,8 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HikeSerializable hike;
     private List<CommentSerializable> commentSerializable;
     private GoogleMap mMap;
+    private HandlerThread handlerThread = new HandlerThread("AssistMeThread");
+    private NotificationManager mNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +85,9 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_blog);
 
         user = SharedPrefUtils.getUserFromSP(BlogActivity.this);
-
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        handlerThread=new HandlerThread("AssistMeThread");
+        handlerThread.start();
 //        TextView title = findViewById(R.id.title);
 //        TextView distance = findViewById(R.id.distance);
 //        ImageView img = findViewById(R.id.image);
@@ -200,8 +215,10 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         myLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Clicked on " + comment , Toast.LENGTH_SHORT).show();
-                Log.i("Clicked on", comment + " " + geoPoint.getLatitude() + " " + geoPoint.getLongitude());
+                if (comment != null) {
+                    Toast.makeText(getApplicationContext(), comment, Toast.LENGTH_SHORT).show();
+                    Log.i("Clicked on", comment + " " + geoPoint.getLatitude() + " " + geoPoint.getLongitude());
+                }
                 if (geoPoint != null) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()), ZOOM_LEVEL+5));
                 }
@@ -242,6 +259,53 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(path.get(0), ZOOM_LEVEL));
         mMap.setMyLocationEnabled(true);
         mMap.setOnPolylineClickListener(this);
+
+
+        TextView assist_me = findViewById(R.id.assist_me);
+        assist_me.setTag("assist_me");
+        Thread assistMeThread = new Thread(new Runnable() {
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
+            @Override
+            public void run() {
+                while (!assist_me.getText().equals("Assist Me")) {
+                    fusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(BlogActivity.this, new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location currentLocation) {
+                                    Log.i("Current Location", currentLocation.getLatitude() + " " + currentLocation.getLongitude());
+
+                                    if (currentLocation != null && Utils.getShortestDistance(hike.getPath(), currentLocation) > 50) {
+                                        Toast.makeText(getApplicationContext(), "You are too far away from the hike", Toast.LENGTH_SHORT).show();
+                                        notifyUser("Move Back to the trail");
+                                    }
+                                }
+                            });
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        assist_me.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Handler handler = new Handler(handlerThread.getLooper());
+                if (assist_me.getTag().equals("assist_me")) {
+                    assist_me.setText("Stop");
+                    assist_me.setTag("stop");
+                    Handler handler = new Handler(handlerThread.getLooper());
+                    handler.post(assistMeThread);
+                } else {
+                    assist_me.setText("Assist Me");
+                    assist_me.setTag("assist_me");
+
+                }
+            }
+        });
     }
 
     @Override
@@ -303,5 +367,34 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initCommentUi() {
         Log.d("HikePath", "initCommentUi: " + commentSerializable.size());
 //        TODO : add bottom sheet to show comments with images
+    }
+    public void notifyUser(String message) {
+        Uri sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.audio_danger);
+        long[] vibrationPattern = {10, 2000, 1000, 2000};
+        String CHANNEL_ID = "AssistMe_01";
+
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_ID,
+                NotificationManager.IMPORTANCE_HIGH);
+        channel.enableVibration(true);
+        channel.setVibrationPattern(vibrationPattern);
+        channel.setSound(sound, null);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("The Hiker")
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setColor(Color.RED)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setChannelId(CHANNEL_ID)
+                .setSound(sound)
+                .setVibrate(vibrationPattern) // Vibrate for 500 milliseconds
+                ;
+
+        mNotificationManager.createNotificationChannel(channel);
+        mNotificationManager.notify(9811, mBuilder.build());
+
     }
 }

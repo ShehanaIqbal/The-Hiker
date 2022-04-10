@@ -64,4 +64,20 @@
         </HorizontalScrollView>
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/assist_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="35dp"
+        android:background="@color/white"
+        android:elevation="5dp"
+        android:padding="3dp"
+        android:text="Assist Me"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
 </RelativeLayout>

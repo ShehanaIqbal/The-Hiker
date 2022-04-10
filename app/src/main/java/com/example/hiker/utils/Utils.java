@@ -37,6 +37,16 @@ public class Utils {
         }
         return distance;
     }
+    public static double getShortestDistance(List<LatLangSerializable> path, Location location) {
+        double shortestDistance = Double.MAX_VALUE;
+        for (LatLangSerializable geoPoint : path) {
+            double distance = getDistance(geoPoint, new LatLangSerializable(location.getLatitude(), location.getLongitude()));
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+            }
+        }
+        return shortestDistance;
+    }
 
     public static double getDistance(LatLangSerializable geoPoint1, LatLangSerializable geoPoint2) {
 //        Distance d in meters = 3963.0 * 1000 * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
