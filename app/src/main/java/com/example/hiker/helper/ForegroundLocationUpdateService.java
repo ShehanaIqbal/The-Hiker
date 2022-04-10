@@ -6,10 +6,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Location;
+
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -52,10 +54,10 @@ public class ForegroundLocationUpdateService extends  Service {
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000 * 60 * 5; //1 minute
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-    private static final float SMALLEST_DISPLACEMENT = 0.0f;
+    private static final long SMALLEST_DISPLACEMENT = 10;
 
 
     private static final String CHANNEL_ID = "channel_01";
