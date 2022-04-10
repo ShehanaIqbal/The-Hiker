@@ -7,17 +7,21 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.example.hiker.model.CommentSerializable;
+import com.example.hiker.model.Hike;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -61,10 +65,10 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         user = SharedPrefUtils.getUserFromSP(BlogActivity.this);
 
-        TextView title = findViewById(R.id.title);
-        TextView distance = findViewById(R.id.distance);
-        ImageView img = findViewById(R.id.image);
-        ImageView likeButton = findViewById(R.id.likeButton);
+//        TextView title = findViewById(R.id.title);
+//        TextView distance = findViewById(R.id.distance);
+//        ImageView img = findViewById(R.id.image);
+//        ImageView likeButton = findViewById(R.id.likeButton);
 
         hike = (HikeSerializable) getIntent().getSerializableExtra("hike");
         if (hike == null) {
@@ -73,58 +77,88 @@ public class BlogActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             getComments();
             path = MapperUtils.convertToLatLang(hike.getPath());
-            title.setText(hike.getTitle());
-            distance.setText(hike.getDistance());
-            setLikeButtonColor(likeButton, UserUtils.userFav(user, hike.getTitle()));
+//            title.setText(hike.getTitle());
+//            distance.setText(hike.getDistance());
+//            setLikeButtonColor(likeButton, UserUtils.userFav(user, hike.getTitle()));
             // set image
-            new ImageLoadTask(hike.getImage(), img).execute();
+            String[] allImageURL ={"https://static.saltinourhair.com/wp-content/uploads/2016/11/23155637/Things-to-do-Ella-Sri-Lanka-Nine-arch-bridge-view-2.jpg","https://destinationlesstravel.com/wp-content/uploads/2019/05/DSC_9600-1-1024x684-1024x684.jpg","https://destinationlesstravel.com/wp-content/uploads/2020/04/Ella-train.jpg.webp"};
+            String[] allComments = {"asd","qwe",""};
+            createHorizontalCard(hike, allImageURL, allComments);
+            //new ImageLoadTask(hike.getImage(), img).execute();
 
             SupportMapFragment mapFragment =
                     (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-            likeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (user != null) {
-                        if (!UserUtils.userFav(user, hike.getTitle())) {
-                            FirebaseApi.saveUserLike(hike.getTitle(), user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    Log.i("Firebase Update", "User liked a post");
-                                    User updatedUser = UserUtils.updateLikes(hike.getTitle(), user);
-                                    user = SharedPrefUtils.saveUserInSP(updatedUser, getApplicationContext());
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(), "Marked as Favorite", Toast.LENGTH_SHORT).show();
-                                            setLikeButtonColor(likeButton, true);
-                                        }
-                                    });
-                                }
-                            });
-                        } else {
-                            FirebaseApi.saveUserDislike(hike.getTitle(), user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    Log.i("Firebase Update", "User unliked a post");
-                                    User updatedUser = UserUtils.updateDislikes(hike.getTitle(), user);
-                                    user = SharedPrefUtils.saveUserInSP(updatedUser, getApplicationContext());
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(), "Removed from Favorites", Toast.LENGTH_SHORT).show();
-                                            setLikeButtonColor(likeButton, false);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }
-                }
-            });
+//
+//            likeButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (user != null) {
+//                        if (!UserUtils.userFav(user, hike.getTitle())) {
+//                            FirebaseApi.saveUserLike(hike.getTitle(), user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                @Override
+//                                public void onSuccess(Void unused) {
+//                                    Log.i("Firebase Update", "User liked a post");
+//                                    User updatedUser = UserUtils.updateLikes(hike.getTitle(), user);
+//                                    user = SharedPrefUtils.saveUserInSP(updatedUser, getApplicationContext());
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            Toast.makeText(getApplicationContext(), "Marked as Favorite", Toast.LENGTH_SHORT).show();
+//                                            setLikeButtonColor(likeButton, true);
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                        } else {
+//                            FirebaseApi.saveUserDislike(hike.getTitle(), user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                @Override
+//                                public void onSuccess(Void unused) {
+//                                    Log.i("Firebase Update", "User unliked a post");
+//                                    User updatedUser = UserUtils.updateDislikes(hike.getTitle(), user);
+//                                    user = SharedPrefUtils.saveUserInSP(updatedUser, getApplicationContext());
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            Toast.makeText(getApplicationContext(), "Removed from Favorites", Toast.LENGTH_SHORT).show();
+//                                            setLikeButtonColor(likeButton, false);
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
+//            });
+//
         }
+    }
+
+    private void createHorizontalCard(HikeSerializable hike, String[] allImageURL, String[] allComments) {
+        LinearLayout linearLayout = findViewById(R.id.horizontal_linear);
+        linearLayout.removeAllViews();
+        for (int i=0;i<allImageURL.length;i++) {
+            linearLayout.addView(horizontalCard(allImageURL[i], allComments[i], hike, linearLayout));
+        }
+    }
+
+    private View horizontalCard(String url, String comment, HikeSerializable hike, LinearLayout mainLayout) {
+        LayoutInflater inflater = getLayoutInflater();
+        View myLayout = inflater.inflate(R.layout.layout_blog_card, mainLayout, false);
+        TextView title = myLayout.findViewById(R.id.title);
+        TextView distance = myLayout.findViewById(R.id.distance);
+        ImageView img = myLayout.findViewById(R.id.image);
+        ImageView likeButton = myLayout.findViewById(R.id.likeButton);
+
+        title.setText(hike.getTitle());
+        distance.setText(comment);
+        setLikeButtonColor(likeButton, UserUtils.userFav(user, hike.getTitle()));
+
+        // set image
+        new ImageLoadTask(url, img).execute();
+
+        return myLayout;
     }
 
     private void setLikeButtonColor(ImageView likeButton, boolean contains) {

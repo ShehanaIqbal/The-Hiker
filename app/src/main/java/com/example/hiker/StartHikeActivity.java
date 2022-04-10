@@ -136,7 +136,6 @@ public class StartHikeActivity extends AppCompatActivity implements OnMapReadyCa
         // that since this activity is in the foreground, the service can exit foreground mode.
         bindService(new Intent(this, ForegroundLocationUpdateService.class), mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-
     }
 
     @Override

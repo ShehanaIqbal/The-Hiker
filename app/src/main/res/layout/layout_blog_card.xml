@@ -28,7 +28,7 @@
 
                 <ImageView
                     android:id="@+id/image"
-                    android:layout_width="match_parent"
+                    android:layout_width="350dp"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     tools:ignore="ContentDescription" />
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="6dp"
-                android:text="EXPERT • NOTTINGHAM"
+                android:text="EXPERT . SRI LANKA"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="#88000000"
                 android:textSize="8dp" />
@@ -70,7 +70,7 @@
 
             <TextView
                 android:id="@+id/distance"
-                android:layout_width="wrap_content"
+                android:layout_width="330dp"
                 android:layout_height="wrap_content"
                 android:text="12 miles"
                 android:textSize="10dp" />

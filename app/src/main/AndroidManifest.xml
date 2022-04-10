@@ -3,6 +3,7 @@
     package="com.example.hiker">
 
     <uses-feature android:name="android.hardware.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -70,7 +71,6 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
 
-
         <activity android:name="com.example.hiker.CameraActivity"
             android:exported="true"></activity>
         <service
@@ -78,7 +78,5 @@
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location" />
-
     </application>
-
 </manifest>

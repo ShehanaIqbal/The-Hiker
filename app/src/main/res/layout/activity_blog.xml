@@ -31,14 +31,35 @@
 
     <FrameLayout
         android:layout_margin="12dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
-        <include
-            android:layout_width="wrap_content"
+<!--        <include-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            layout="@layout/layout_blog_card" />-->
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            layout="@layout/layout_blog_card" />
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/horizontal_linear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+<!--                <include-->
+<!--                    layout="@layout/layout_blog_card"-->
+<!--                    android:layout_width="350dp"-->
+<!--                    android:layout_marginRight="12dp"-->
+<!--                    android:layout_height="wrap_content" />-->
+
+<!--                <include layout="@layout/item_explore_carousel_card" />-->
+            </LinearLayout>
+        </HorizontalScrollView>
     </FrameLayout>
 
 </RelativeLayout>

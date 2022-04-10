@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingVertical="6dp"
-            android:text="EXPERT • NOTTINGHAM"
+            android:text="EXPERT • SRI LANKA"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="#88000000"
             android:textSize="8dp" />
