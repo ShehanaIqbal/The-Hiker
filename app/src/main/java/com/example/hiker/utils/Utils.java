@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 
 import com.example.hiker.R;
+import com.example.hiker.model.LatLangSerializable;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.ByteArrayOutputStream;
@@ -26,16 +27,42 @@ public class Utils {
         return Uri.parse(path);
     }
 
-    public static float getHikeDistance(List<GeoPoint> path) {
+    public static float getHikeDistance(List<LatLangSerializable> path) {
         float distance = 0;
+        if (path.size() <= 1) {
+            return distance;
+        }
         for (int i = 0; i < path.size() - 1; i++) {
             distance += getDistance(path.get(i), path.get(i + 1));
         }
         return distance;
     }
 
-    private static float getDistance(GeoPoint geoPoint, GeoPoint geoPoint1) {
-        return (float) Math.sqrt(Math.pow(geoPoint.getLatitude() - geoPoint1.getLatitude(), 2) + Math.pow(geoPoint.getLongitude() - geoPoint1.getLongitude(), 2));
+    public static double getDistance(LatLangSerializable geoPoint1, LatLangSerializable geoPoint2) {
+//        Distance d in meters = 3963.0 * 1000 * arccos[(sin(lat1) * sin(lat2)) + cos(lat1) * cos(lat2) * cos(long2 – long1)]
+        double lat1 = geoPoint1.getLatitude();
+        double lon1 = geoPoint1.getLongitude();
+        double lat2 = geoPoint2.getLatitude();
+        double lon2 = geoPoint2.getLongitude();
+
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dlon / 2),2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double r = 6371;  //radius of the earth in km
+        // calculate the result
+        return(c * r * 1000);
+//        return (float) Math.sqrt(Math.pow(geoPoint.getLatitude() - geoPoint1.getLatitude(), 2) + Math.pow(geoPoint.getLongitude() - geoPoint1.getLongitude(), 2));
     }
 
     /**
