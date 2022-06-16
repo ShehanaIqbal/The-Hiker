@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.hiker"
-        minSdk 28
-        targetSdk 31
+        minSdk 26
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -26,13 +26,45 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
+apply plugin: 'com.google.gms.google-services'
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.13.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'org.jetbrains:annotations:15.0'
+    testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-}
+
+    // circular image view
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    // card view
+    implementation 'androidx.cardview:cardview:1.0.0'
+    // floating edittext
+    implementation 'com.github.florent37:materialtextfield:1.0.7'
+    // Horizontal slider
+    implementation 'com.yarolegovich:discrete-scrollview:1.5.1'
+
+
+
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+
+    // collapsable view
+    implementation 'com.android.support:design:31.0.0'
+
+    // google map
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    // firebase
+    implementation platform('com.google.firebase:firebase-bom:29.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
+
+    // Object to json and vice-versa
+    implementation 'com.google.code.gson:gson:2.8.8'
+    }

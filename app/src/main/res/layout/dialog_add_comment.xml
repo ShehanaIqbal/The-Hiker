@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:inputType="textEmailAddress"
+        android:id="@+id/comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_bg_small"
+        android:drawableTint="@android:color/darker_gray"
+        android:hint="Comments"
+        android:paddingLeft="24dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp" />
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <Button
+        android:onClick="loginClicked"
+        android:id="@+id/capture"
+        android:tooltipText="Capture."
+        android:textColor="@color/teal_700"
+        android:backgroundTint="@color/shopFabRipple"
+        android:background="@drawable/edittext_bg_small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="8dp"
+        android:text="Capture"  />
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_marginVertical="12dp"
+            android:layout_marginRight="8dp"
+            android:id="@+id/add"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/teal_700"
+            android:background="@drawable/edittext_bg_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:text="Add Comment" />
+
+        <Button
+            android:layout_marginRight="12dp"
+            android:layout_marginVertical="12dp"
+            android:id="@+id/back"
+            android:textColor="@color/teal_700"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/edittext_bg_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:text="Back" />
+    </LinearLayout>
+</LinearLayout>

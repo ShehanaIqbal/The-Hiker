@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/background_all_reg.xml" value="0.103" />
+        <entry key="app/src/main/res/drawable/background_back_btn.xml" value="0.2275" />
+        <entry key="app/src/main/res/drawable/background_button.xml" value="0.174" />
+        <entry key="app/src/main/res/drawable/background_edit_text.xml" value="0.174" />
+        <entry key="app/src/main/res/drawable/card_list_item.xml" value="0.1735" />
+        <entry key="app/src/main/res/drawable/empty_tall_divider.xml" value="0.1735" />
+        <entry key="app/src/main/res/drawable/splash_background.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_blog.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_camera.xml" value="0.264" />
+        <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.14097914777878512" />
+        <entry key="app/src/main/res/layout/activity_explore.xml" value="0.3098958333333333" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.31614583333333335" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33125" />
+        <entry key="app/src/main/res/layout/activity_search_hike.xml" value="0.24089635854341737" />
+        <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.33125" />
+        <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.3543577981651376" />
+        <entry key="app/src/main/res/layout/activity_signup.xml" value="0.16510416666666666" />
+        <entry key="app/src/main/res/layout/activity_submit_trail.xml" value="0.33125" />
+        <entry key="app/src/main/res/layout/item_explore_carousel_card.xml" value="0.15070921985815602" />
+        <entry key="app/src/main/res/layout/layout_blog_card.xml" value="0.1" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

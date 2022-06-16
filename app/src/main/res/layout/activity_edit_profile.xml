@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".EditProfileActivity">
+    <TextView
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="Edit your Hiker Profile"
+        android:textColor="@color/teal_700"
+        android:textSize="24dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:onClick="onProfilePicClicked"
+            android:layout_centerHorizontal="true"
+            android:clickable="true"
+            android:elevation="6dp"
+            android:id="@+id/profile_image"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:padding="12dp"
+            android:foreground="?selectableItemBackground"
+            android:src="@drawable/dummy_profile_picture"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="2dp" />
+    </RelativeLayout>
+
+    <EditText
+        android:layout_marginTop="36dp"
+        android:layout_marginHorizontal="36dp"
+        android:inputType="text"
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_bg_small"
+        android:drawableTint="@android:color/darker_gray"
+        android:drawableLeft="@drawable/ic_baseline_person_24"
+        android:drawablePadding="14dp"
+        android:hint="Display Name"
+        android:paddingLeft="24dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp" />
+
+    <EditText
+        android:enabled="false"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="36dp"
+        android:inputType="textEmailAddress"
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_bg_small"
+        android:drawableTint="@android:color/darker_gray"
+        android:drawableLeft="@drawable/ic_baseline_email_24"
+        android:drawablePadding="14dp"
+        android:hint="Email"
+        android:paddingLeft="24dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp" />
+
+    <EditText
+        android:layout_marginHorizontal="36dp"
+        android:inputType="textPassword"
+        android:layout_marginTop="16dp"
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_bg_small"
+        android:drawableTint="@android:color/darker_gray"
+        android:drawableLeft="@drawable/ic_baseline_lock_24"
+        android:drawablePadding="14dp"
+        android:hint="Password"
+        android:paddingLeft="24dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp" />
+
+    <ProgressBar
+        android:layout_marginVertical="18dp"
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:onClick="saveChangesClicked"
+        android:id="@+id/save"
+        android:layout_marginHorizontal="36dp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/teal_700"
+        android:background="@drawable/edittext_bg_small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Changes" />
+
+    <Button
+        android:onClick="discardChangesClicked"
+        android:id="@+id/discard"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="36dp"
+        android:textColor="@color/teal_700"
+        android:backgroundTint="@color/white"
+        android:background="@drawable/edittext_bg_small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Discard and Exit" />
+
+    <Button
+        android:onClick="logoutClicked"
+        android:id="@+id/logout"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="36dp"
+        android:textColor="@color/teal_700"
+        android:backgroundTint="@color/white"
+        android:background="@drawable/edittext_bg_small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout" />
+</LinearLayout>
